@@ -6,6 +6,10 @@ const app = require("express")();
     app.get("/", function(req, res) {
         res.sendFile(__dirname + "/index.html");
     });
+	
+	app.get("/hotOrNot", function(req, res) {
+        res.sendFile(__dirname + "/compare/index.html");
+    });
 
     io.on("connection", function(socket) {
 

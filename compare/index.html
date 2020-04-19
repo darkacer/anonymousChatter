@@ -1,0 +1,70 @@
+<html>
+<head>
+<script src='jquery.js'></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.js"></script> -->
+</head>
+<input type='text' id='query'>Title</input>
+<button onclick="search()">Search</button>
+
+
+<div id='contenthere'></div>
+
+<template>
+  <div class="myClass">I like: </div>
+  <img src=''></img>
+  <br>
+</template>
+
+<script>
+	var settings = {
+		"async": true,
+		"crossDomain": true,
+		"url": "https://www.googleapis.com/youtube/v3/search",
+		"method": "GET",
+		"data": {
+			"q" : "hello there",
+			"part": "snippet",
+			"maxResults": 10,
+			"key": "AIzaSyAxfkjKaLZIRgxeQtyzxYebgCUkpjI-XSI"
+	}
+}
+	<!-- gapi.load("client"); -->
+	<!-- gapi.client.setApiKey("AIzaSyAxfkjKaLZIRgxeQtyzxYebgCUkpjI-XSI"); -->
+				
+	function search() {
+		
+		console.log("search key" , keySearch)
+		var keySearch = $("#query").val() != "" ? $("#query").val() : 'hello there';
+		
+		settings.data.q = keySearch;
+		console.log("search key" , keySearch)
+		
+		var temp, item, a, i;
+		var contentElement = $("#contenthere");
+		contentElement.empty();
+		temp = document.getElementsByTagName("template")[0];
+
+		item = temp.content.querySelector("img");
+		breakTag = temp.content.querySelector("br");
+
+		$.ajax(settings).done(function (response) {
+			<!-- console.log(response); -->
+			console.log(response.items)
+			myArr = response.items
+			
+			for (i = 0; i < myArr.length; i++) {
+				a = document.importNode(item, true);
+				b = document.importNode(breakTag, true);
+				//console.log(myArr[i])
+				a.src = myArr[i].snippet.thumbnails.medium.url;
+				//console.log(a)
+				contentElement.append(a);
+				contentElement.append(b);
+				contentElement.append(b);
+			}
+		})
+	  }
+
+</script>
+
+</html>
