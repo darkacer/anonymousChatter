@@ -17,7 +17,7 @@
 </template>
 
 <script>
-	var youtubeApiKey = process.env.YOUTUBE_KEY;
+	var apiKey
 	var settings = {
 		"async": true,
 		"crossDomain": true,
@@ -27,7 +27,7 @@
 			"q" : "hello there",
 			"part": "snippet",
 			"maxResults": 10,
-			"key": youtubeApiKey
+			"key": "AIzaSyAxfkjKaLZIRgxeQtyzxYebgCUkpjI-XSI"
 	}
 }
 	<!-- gapi.load("client"); -->
