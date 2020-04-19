@@ -1,22 +1,19 @@
 <html>
 <head>
-<!-- <script src='jquery.js'></script> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.4.1.js"></script> -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
-<input type='text' id='query'>Title</input>
-<button onclick="search()">Search</button>
+<body>
+	<input type='text' placeholder='Search Youtube video here' id='query'></input>
+	<button onclick="search()">Search</button>
 
+	<div id='contenthere'></div>
 
-<div id='contenthere'></div>
-
-<template>
-  <div class="myClass">I like: </div>
-  <img src=''></img>
-  <div class="breaks"><br><br></div>
-  <br>
-</template>
-
+	<template>
+	  <div class="myClass">I like: </div>
+	  <img src=''></img>
+	  <div class="breaks"><br><br></div>
+	</template>
+</body>
 <script>
 	var apiKey
 	var settings = {
@@ -31,9 +28,7 @@
 			"key": "AIzaSyAxfkjKaLZIRgxeQtyzxYebgCUkpjI-XSI"
 	}
 }
-	<!-- gapi.load("client"); -->
-	<!-- gapi.client.setApiKey("AIzaSyAxfkjKaLZIRgxeQtyzxYebgCUkpjI-XSI"); -->
-				
+
 	function search() {
 		
 		console.log("search key" , keySearch)
@@ -52,25 +47,21 @@
 		title = temp.content.querySelector(".myClass");
 
 		$.ajax(settings).done(function (response) {
-			<!-- console.log(response); -->
 			console.log(response.items)
 			myArr = response.items
-			
 			for (i = 0; i < myArr.length; i++) {
 				a = document.importNode(item, true);
 				b = document.importNode(breakTag, true);
 				c = document.importNode(title, true);
-				//console.log(myArr[i])
 				a.src = myArr[i].snippet.thumbnails.medium.url;
 				c.innerHTML = myArr[i].snippet.title;
-				//console.log(a)
 				contentElement.append(c);
 				contentElement.append(a);
 				contentElement.append(b);
 				
 			}
 		})
-	  }
+	}
 
 </script>
 
