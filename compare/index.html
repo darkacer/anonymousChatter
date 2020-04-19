@@ -13,6 +13,7 @@
 <template>
   <div class="myClass">I like: </div>
   <img src=''></img>
+  <div class="breaks"><br><br></div>
   <br>
 </template>
 
@@ -47,7 +48,8 @@
 		temp = document.getElementsByTagName("template")[0];
 
 		item = temp.content.querySelector("img");
-		breakTag = temp.content.querySelector("br");
+		breakTag = temp.content.querySelector(".breaks");
+		title = temp.content.querySelector(".myClass");
 
 		$.ajax(settings).done(function (response) {
 			<!-- console.log(response); -->
@@ -57,12 +59,15 @@
 			for (i = 0; i < myArr.length; i++) {
 				a = document.importNode(item, true);
 				b = document.importNode(breakTag, true);
+				c = document.importNode(title, true);
 				//console.log(myArr[i])
 				a.src = myArr[i].snippet.thumbnails.medium.url;
+				c.innerHTML = myArr[i].snippet.title;
 				//console.log(a)
+				contentElement.append(c);
 				contentElement.append(a);
 				contentElement.append(b);
-				contentElement.append(b);
+				
 			}
 		})
 	  }
