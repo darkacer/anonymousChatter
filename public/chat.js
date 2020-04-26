@@ -5,7 +5,7 @@ const addMessage = (message) => {
 	const li = document.createElement("div");
 	li.innerHTML = message;
 	li.className = 'chatBox'
-	li.style.width = '25%'
+	li.style.width = '100%'
 	messages.appendChild(li);
 	window.scrollTo(0, document.body.scrollHeight);
 }
