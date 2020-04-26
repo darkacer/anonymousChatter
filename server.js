@@ -1,33 +1,42 @@
+var express = require('express');
 const app = require("express")();
-    const http = require("http").Server(app);
-    const io = require("socket.io")(http);
-    const port = process.env.PORT || 3000;
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
+const port = process.env.PORT || 3000;
 
-    app.get("/", function(req, res) {
-        res.sendFile(__dirname + "/index.html");
-    });
-	
-	app.get("/hotOrNot", function(req, res) {
-        res.sendFile(__dirname + "/compare/index.html");
-    });
+// app.get("/", function(req, res) {
+	// res.sendFile(__dirname + "/index.html");
+// });
+app.use(express.static('public'));
 
-    io.on("connection", function(socket) {
+app.get("/source/index.js", function(req, res) {
+	res.sendFile(__dirname + "/source/index.js");
+});
 
-        socket.on("user_join", function(data) {
-            this.username = data;
-            socket.broadcast.emit("user_join", data);
-        });
+app.get("/hotOrNot", function(req, res) {
+	res.sendFile(__dirname + "/compare/index.html");
+});
 
-        socket.on("chat_message", function(data) {
-            data.username = this.username;
-            socket.broadcast.emit("chat_message", data);
-        });
+io.on("connection", function(socket) {
 
-        socket.on("disconnect", function(data) {
-            socket.broadcast.emit("user_leave", this.username);
-    	});
-    });
+	socket.on("user_join", function(data) {
+		console.log(data)
+		this.username = data.username;
+		this.roomId = data.roomId;
+		socket.broadcast.emit("user_join" + this.roomId, data.username);
+	});
 
-    http.listen(port, function() {
-        console.log("Listening on *:" + port);
-    });
+	socket.on("chat_message", function(data) {
+		data.username = this.username;
+		console.log('datais', data)
+		socket.broadcast.emit("chat_message" + data.roomId, data);
+	});
+
+	socket.on("disconnect", function(data) {
+		socket.broadcast.emit("user_leave" + this.roomId, this.username);
+	});
+});
+
+http.listen(port, function() {
+	console.log("Listening on *:" + port);
+});

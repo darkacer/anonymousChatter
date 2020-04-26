@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+    <html>
+	<head>
+		<title>Real-time Chat App</title>
+		<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+		<script src='/chat.js'></script>
+	</head>
+	<body>
+		<ul class="messages"></ul>
+		<form>
+			<input type="text" class="input" autocomplete="off" autofocus onkeypress='sukak(event)'/>
+			<button onsubmit='sukak(event)'>Send</button>
+		</form>
+		
+		<script>
+			let username
+			let roomId
+			if (typeof getUrlVars()['roomId'] === 'undefined') {
+				roomId = prompt("Please Enter roomId Keep Empty to create new Room", "");
+				insertParam('roomId', roomId);
+			} else {
+				username = prompt("Please enter a nickname: ", "hi");
+				roomId = getUrlVars()['roomId']
+			}
+			
+			const socket = io();
+			const form = document.querySelector("form");
+			const input = document.querySelector(".input");
+			const messages = document.querySelector(".messages");
+			username = (username == '') ? getName() : username;
+
+			form.addEventListener("submit", function(event) {
+				event.preventDefault();
+				addMessage(username + ": " + input.value);
+				socket.emit("chat_message", {
+					message: input.value,
+					'roomId' : roomId
+				});
+				input.value = "";
+				return false;
+			}, false);
+
+			function sukak(event) {
+				//console.log('hi', input.value)
+			}
+
+			socket.on("chat_message" + roomId, function(data) {
+				addMessage(data.username + ": " + data.message);
+			});
+
+			socket.on("user_join" + roomId, function(data) {
+				addMessage(data + " just joined the chat!");
+			});
+
+			socket.on("user_leave" + roomId, function(data) {
+				addMessage(data + " has left the chat.");
+			});
+
+			addMessage("You have joined the chat as '" + username  + "'.");
+			socket.emit("user_join" , {
+					'username' : username, 
+					'roomId' : roomId
+			});
+
+			function addMessage(message) {
+				const li = document.createElement("li");
+				li.innerHTML = message;
+				messages.appendChild(li);
+				window.scrollTo(0, document.body.scrollHeight);
+			}
+		</script>
+	</body>
+</html>
