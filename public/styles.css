@@ -1,0 +1,11 @@
+.chatBox {
+	width: 50%;
+	/* height: 100px; */
+	border: 1px solid blue;
+	box-sizing: border-box;
+	/* margin:0 auto; */
+
+}
+.chatBox1 {
+	display:inline-block;
+}

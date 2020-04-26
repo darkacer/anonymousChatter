@@ -1,8 +1,43 @@
-console.log('hello from chat.js');
-const formw = document.querySelector("form");
-console.log('hello world', formw)
+let sentTyping = false;
 const getName = () => listOfNames[Math.floor(Math.random() * listOfNames.length)]
 
+const addMessage = (message) => {
+	const li = document.createElement("div");
+	li.innerHTML = message;
+	li.className = 'chatBox'
+	li.style.width = '25%'
+	messages.appendChild(li);
+	window.scrollTo(0, document.body.scrollHeight);
+}
+
+const startTyping = () => {
+	console.log('start emit typing');
+	socket.emit("start_typing", {
+		'username' : username,
+		'roomId': roomId
+	})
+}
+
+const stopTyping = () => {
+console.log('stop emit typing');
+	socket.emit("stop_typing", {
+		'username' : username,
+		'roomId': roomId
+	})
+}
+
+function typing(event) {
+	console.log(input.value)
+	if (input.value.length > 0 && !sentTyping) {
+		startTyping();
+		sentTyping = true;
+	}
+	console.log(input.value.length, ':len')
+	if (input.value.length === 0 && sentTyping) {
+		stopTyping();
+		sentTyping = false;
+	}
+}
 
 const getUrlVars = () => {
     var vars = {};
@@ -18,7 +53,6 @@ const insertParam = (key, value) => {
     var i=kvp.length; var x; 
 	while(i--) {
         x = kvp[i].split('=');
-
         if (x[0]==key) {
             x[1] = value;
             kvp[i] = x.join('=');

@@ -5,22 +5,27 @@
 		<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
 		<script src='/chat.js'></script>
+		<link rel="stylesheet" href="styles.css">
+
 	</head>
 	<body>
-		<ul class="messages"></ul>
+		<div class="messages"></div><br>
 		<form>
-			<input type="text" class="input" autocomplete="off" autofocus onkeypress='sukak(event)'/>
+			<div id='typing'></div><br>
+			<input type="text" class="input" autocomplete="off" autofocus onkeypress='typing(event)' onkeydown='typing(event)' onkeyup='typing(event)'/>
+
 			<button onsubmit='sukak(event)'>Send</button>
 		</form>
 		
 		<script>
 			let username
 			let roomId
+			let usersTyping = new Set();
 			if (typeof getUrlVars()['roomId'] === 'undefined') {
-				roomId = prompt("Please Enter roomId Keep Empty to create new Room", "");
+				roomId = prompt("Please Enter roomId Keep Empty to create new Room", "PUBLICROOM");
 				insertParam('roomId', roomId);
 			} else {
-				username = prompt("Please enter a nickname: ", "hi");
+				username = prompt("Please enter a nickname: ", "");
 				roomId = getUrlVars()['roomId']
 			}
 			
@@ -29,24 +34,43 @@
 			const input = document.querySelector(".input");
 			const messages = document.querySelector(".messages");
 			username = (username == '') ? getName() : username;
+			
+			addMessage("You have joined the chat as '" + username  + "'.");
+			socket.emit("user_join" , {
+				'username' : username, 
+				'roomId' : roomId
+			});
 
 			form.addEventListener("submit", function(event) {
 				event.preventDefault();
-				addMessage(username + ": " + input.value);
-				socket.emit("chat_message", {
-					message: input.value,
-					'roomId' : roomId
+				if (input.value.length > 0) {
+					addMessage('<b>' + username + "</b><br>" + input.value +'<br>');
+					socket.emit("chat_message" , {
+						message: input.value,
+						'roomId' : roomId
 				});
 				input.value = "";
+				typing();
+				}
+				
 				return false;
 			}, false);
-
-			function sukak(event) {
-				//console.log('hi', input.value)
-			}
-
+			
 			socket.on("chat_message" + roomId, function(data) {
-				addMessage(data.username + ": " + data.message);
+				addMessage(data.username + "<br>" + data.message + '<br>');
+			});
+			
+			socket.on("show_typing" + roomId, function(user) {
+				//addMessage(data.username + ": " + data.message);
+				console.log('show typing for', user);
+				usersTyping.add(user);
+				document.querySelector("#typing").innerHTML = [...usersTyping].join() + " Typing ...";
+			});
+			socket.on("noShow_typing" + roomId, function(user) {
+				//addMessage(data.username + ": " + data.message);
+				console.log('stop typing for', user);
+				if (usersTyping.has(user)) usersTyping.delete(user);
+				document.querySelector("#typing").innerHTML = '';
 			});
 
 			socket.on("user_join" + roomId, function(data) {
@@ -57,18 +81,7 @@
 				addMessage(data + " has left the chat.");
 			});
 
-			addMessage("You have joined the chat as '" + username  + "'.");
-			socket.emit("user_join" , {
-					'username' : username, 
-					'roomId' : roomId
-			});
-
-			function addMessage(message) {
-				const li = document.createElement("li");
-				li.innerHTML = message;
-				messages.appendChild(li);
-				window.scrollTo(0, document.body.scrollHeight);
-			}
+			
 		</script>
 	</body>
 </html>
