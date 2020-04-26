@@ -12,9 +12,9 @@
 		<div class="messages"></div><br>
 		<form>
 			<div id='typing'></div><br>
-			<input type='text'  class="input" autocomplete="off" autofocus onkeypress='typing(event)' onkeydown='typing(event)' onkeyup='typing(event)'></input>
+			<input type='text'  class="input" autocomplete="off" autofocus onkeypress='typing(event)' onkeydown='typing(event)' onkeyup='typing(event)' width="70%"></input>
 
-			<button onsubmit='sukak(event)'>Send</button>
+			<input type='submit' onsubmit='sukak(event)'></input>
 		</form>
 		
 		<script>
@@ -44,7 +44,7 @@
 			form.addEventListener("submit", function(event) {
 				event.preventDefault();
 				if (input.value.length > 0) {
-					addMessage('<b>' + username + "</b><br>" + input.value +'<br>');
+					addMessage('<div style="text-align:right"><b>' + username + "</b><br>" + input.value +'<br></div>');
 					socket.emit("chat_message" , {
 						message: input.value,
 						'roomId' : roomId
@@ -57,7 +57,7 @@
 			}, false);
 			
 			socket.on("chat_message" + roomId, function(data) {
-				addMessage(data.username + "<br>" + data.message + '<br>');
+				addMessage("<span><b>" + data.username + "</b><br>" + data.message + '<br></span>');
 			});
 			
 			socket.on("show_typing" + roomId, function(user) {
@@ -65,6 +65,7 @@
 				console.log('show typing for', user);
 				usersTyping.add(user);
 				document.querySelector("#typing").innerHTML = [...usersTyping].join() + " Typing ...";
+				window.scrollTo(0, document.body.scrollHeight)
 			});
 			socket.on("noShow_typing" + roomId, function(user) {
 				//addMessage(data.username + ": " + data.message);
